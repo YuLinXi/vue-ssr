@@ -1,9 +1,7 @@
 <template>
   <div id="app">
     <h1>{{ message }}</h1>
-    <div>
-      <input type="text" v-model="message"/>
-    </div>
+    <input type="text" v-model="message"/>
     <div>
       <button @click="handleClick">点击测试</button>
     </div>
@@ -22,7 +20,6 @@ export default {
     handleClick() {
       console.log('click click')
     }
-
   }
 }
 </script>

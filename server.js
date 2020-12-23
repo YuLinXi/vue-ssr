@@ -1,37 +1,48 @@
 const Koa = require('koa');
+const staticFile = require('koa-static');
 const Vue = require('vue');
 const path = require('path');
+const { createBundleRenderer } = require('vue-server-renderer');
+const Router = require('koa-router');
+const { resolve } = require('./build/utils');
 const fs = require('fs');
-const renderer = require('vue-server-renderer').createRenderer({
-    template: fs.readFileSync('./index.template.html', 'utf-8')
+
+const clientManifest = require('./dist/vue-ssr-client-manifest.json');
+const serverBundle = require('./dist/vue-ssr-server-bundle.json')
+
+const template = fs.readFileSync(resolve('index.template.html'), 'utf-8');
+
+const renderer = createBundleRenderer(serverBundle, {
+  runInNewContext: false,
+  template,
+  clientManifest
 });
 
-const resolve = (src) => path.resolve(___dirname, src);
 const app = new Koa();
 
-let htmlStr = nuull;
-const vueInst = new Vue({
-    template: `
-        <div id="app">
-            <h1>{{ message }}</h1>  
-        </div> 
-    `,
-    data: {
-        message: '测试'
-    }
-})
+const context = {
+  title: 'vue ssr',
+  metas: `
+    <meta name="keyword" content="vue,ssr">
+    <meta name="description" content="vue srr demo">
+  `,
+};
+app.use(staticFile(resolve('static')));
 
-renderer.renderToString(vueInst, {
-    title: '测试'
-},(err, html) => {
-    if (err) throw err;
-    htmlStr = html;
-})
+app.use(staticFile(__dirname));
 
 app.use(async ctx => {
+  renderer.renderToString(context, (err, html) => {
+    if (err) {
+      // ctx.err
+      ctx.throw(500, 'Internal Server Error');
+      return ;
+    }
     ctx.type = 'text/html;charset=utf-8'
-    ctx.body = htmlStr;
+    ctx.body = html;
+  })
 });
 
-app.listen(3000);
-console.log(`server start at port 3000`);
+
+app.listen(9999);
+console.log(`server start at port 9999`);
