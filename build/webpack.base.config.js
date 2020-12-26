@@ -1,6 +1,7 @@
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const { resolve, isProd, env } = require('./utils');
+const { isProd, env } = require('./consts');
+const { resolve } = require('./common');
 
 module.exports = {
   mode: env,
