@@ -10,6 +10,10 @@ const templatePath = resolve('./index.template.html');
 const serverBundlePath = resolve('./dist/vue-ssr-server-bundle.json');
 const clientManifestPath = resolve('./dist/vue-ssr-client-manifest.json');
 
+const expressTransformToKoaMiddleware = () => {
+
+}
+
 const setupDevServer = (app, cb) => {
   let ready;
   const onReady = new Promise(r => ready = r);
@@ -64,6 +68,12 @@ const setupDevServer = (app, cb) => {
       throw err
     }
   })
+
+  app.use(async (ctx, next) => {
+    return new Promise((resolve) => {
+      clientDevMiddleware(ctx.req, ctx.res, resolve);
+    }).then(next);
+  });
 
   return onReady;
 }
