@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const webpack = require('webpack');
 const chokidar = require('chokidar');
+const { devMiddleware, hotMiddleware } = require('koa-webpack-middleware');
 const { resolve } = require('./common');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const serverConfig = require('./webpack.server.config');
@@ -9,10 +10,6 @@ const clientConfig = require('./webpack.client.config');
 const templatePath = resolve('./index.template.html');
 const serverBundlePath = resolve('./dist/vue-ssr-server-bundle.json');
 const clientManifestPath = resolve('./dist/vue-ssr-client-manifest.json');
-
-const expressTransformToKoaMiddleware = () => {
-
-}
 
 const setupDevServer = (app, cb) => {
   let ready;
@@ -39,7 +36,7 @@ const setupDevServer = (app, cb) => {
   // watch server-bundle completed
   const serverCompiler = webpack(serverConfig);
   const serverDevMiddleware = webpackDevMiddleware(serverCompiler, {
-    // logLevel: 'silent',
+    logLevel: 'silent',
   })
   serverCompiler.hooks.done.tap('serverCompleted', () => {
     try {
@@ -53,10 +50,16 @@ const setupDevServer = (app, cb) => {
   })
 
   // watch client-bundle completed
+  clientConfig.plugins.push(new webpack.HotModuleReplacementPlugin())
+  clientConfig.entry.app = [
+    'webpack-hot-middleware/client?quiet=true&reload=true',
+    clientConfig.entry.app
+  ];
+  clientConfig.output.filename = '[name].js';
   const clientCompiler = webpack(clientConfig);
-  const clientDevMiddleware = webpackDevMiddleware(clientCompiler, {
+  const clientDevMiddleware = devMiddleware(clientCompiler, {
     publicPath: clientConfig.output.publicPath,
-    // logLevel: 'silent',
+    quiet: true,
   })
   clientCompiler.hooks.done.tap('clientCompleted', () => {
     try {
@@ -68,12 +71,10 @@ const setupDevServer = (app, cb) => {
       throw err
     }
   })
-
-  app.use(async (ctx, next) => {
-    return new Promise((resolve) => {
-      clientDevMiddleware(ctx.req, ctx.res, resolve);
-    }).then(next);
-  });
+  app.use(clientDevMiddleware);
+  app.use(hotMiddleware(clientCompiler, {
+    log: false
+  }))
 
   return onReady;
 }
