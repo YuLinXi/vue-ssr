@@ -4,7 +4,10 @@
 
 <script>
 export default {
-  name: "Index"
+  name: "Index",
+  metaInfo: {
+    title: '关于我们'
+  }
 }
 </script>
 

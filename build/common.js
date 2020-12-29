@@ -1,6 +1,5 @@
 const path = require('path');
 const { createBundleRenderer } = require('vue-server-renderer');
-const { rendererContext } = require('./consts')
 
 const createRenderer = (serverBundle, clientManifest, template) => createBundleRenderer(serverBundle, {
   runInNewContext: false,
@@ -11,9 +10,10 @@ const createRenderer = (serverBundle, clientManifest, template) => createBundleR
 const resolve = (file) => path.resolve(__dirname, '../', file);
 
 const htmlResponse = async (ctx, renderer) => {
-  rendererContext.url = ctx.url;
+  const renderContext = {};
+  renderContext.url = ctx.url;
   try {
-    const html = await renderer.renderToString(rendererContext);
+    const html = await renderer.renderToString(renderContext);
     ctx.type = 'text/html;charset=utf-8'
     ctx.body = html;
   } catch (err) {
