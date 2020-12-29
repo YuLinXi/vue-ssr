@@ -1,9 +1,16 @@
 <template>
   <div id="app">
-    <h1>{{ message }}</h1>
-    <input type="text" v-model="message"/>
     <div>
-      <button @click="handleClick">点击测试</button>
+      <router-link to="/">Home Pages</router-link>
+    </div>
+    <div>
+      <router-link to="/about">About Pages</router-link>
+    </div>
+    <div>
+      <router-link to="/other">Other Pages</router-link>
+    </div>
+    <div style="margin-top: 100px">
+      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -11,16 +18,6 @@
 <script>
 export default {
   name: "App",
-  data() {
-    return {
-      message: 'vue-ssr'
-    }
-  },
-  methods: {
-    handleClick() {
-      console.log('click click')
-    }
-  }
 }
 </script>
 

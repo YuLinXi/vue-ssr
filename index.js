@@ -29,7 +29,7 @@ app.use(async ctx => {
   if (!isProd) {
     await onReady;
   }
-  htmlResponse(ctx, renderer);
+  await htmlResponse(ctx, renderer);
 });
 
 app.listen(9998);

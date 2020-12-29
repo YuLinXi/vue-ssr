@@ -36,7 +36,7 @@ const setupDevServer = (app, cb) => {
   // watch server-bundle completed
   const serverCompiler = webpack(serverConfig);
   const serverDevMiddleware = webpackDevMiddleware(serverCompiler, {
-    logLevel: 'silent',
+    // logLevel: 'silent',
   })
   serverCompiler.hooks.done.tap('serverCompleted', () => {
     try {
@@ -59,7 +59,7 @@ const setupDevServer = (app, cb) => {
   const clientCompiler = webpack(clientConfig);
   const clientDevMiddleware = devMiddleware(clientCompiler, {
     publicPath: clientConfig.output.publicPath,
-    quiet: true,
+    // quiet: true,
   })
   clientCompiler.hooks.done.tap('clientCompleted', () => {
     try {
